@@ -146,8 +146,6 @@ Flutter App → OpenAI directly
 
 ------------------------------------------------------------------------
 
----
-
 ## 👨‍💻 Project Maintainer ❤️
 
 [![Md. Hamid Hosen](https://github.com/hamidhosen42.png?size=140)](https://github.com/hamidhosen42)
@@ -155,7 +153,6 @@ Flutter App → OpenAI directly
 **[Md. Hamid Hosen](https://github.com/hamidhosen42)**  
 Associate Software Engineer @P2M Soft
 
----
 ------------------------------------------------------------------------
 
 # 📄 License
