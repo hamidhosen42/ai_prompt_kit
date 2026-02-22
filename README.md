@@ -4,41 +4,43 @@ A Flutter-friendly AI helper package for calling LLM / AI APIs using **prompt te
 
 This package is designed to make AI integration in Flutter **simple, readable, and production-ready**.
 
----
+------------------------------------------------------------------------
 
 ## ✨ Features
 
-- 🔌 OpenAI-style REST API support
-- 🧠 PromptTemplate system (variable-based prompts)
-- 📦 Clean AI client abstraction
-- ⚠️ Graceful error handling (no crashes)
-- 🎯 UI-agnostic (works with any Flutter app)
-- 🚀 pub.dev–ready example app
+-   🔌 OpenAI-compatible REST API support\
+-   🧠 `PromptTemplate` system (variable-based prompts)\
+-   🌍 Multi-language support via `AiLanguage`
+-   🔎 Auto language detection\
+-   📊 Token usage tracking\
+-   ⚠️ Graceful error handling (no crashes)\
+-   🎯 UI-agnostic\
+-   🚀 Production-ready example app
 
----
+------------------------------------------------------------------------
 
 ## 📦 Installation
 
-Add this to your `pubspec.yaml`:
+Add to your `pubspec.yaml`:
 
-```yaml
+``` yaml
 dependencies:
-  ai_prompt_kit: ^0.0.3
+  ai_prompt_kit: ^0.1.0
 ```
 
 Then run:
 
-```bash
+``` bash
 flutter pub get
 ```
 
----
+------------------------------------------------------------------------
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
-### 1️⃣ Initialize the AI Client
+## 1️⃣ Initialize the AI Client
 
-```dart
+``` dart
 final aiClient = AiClient(
   AiConfig(
     apiKey: "YOUR_API_KEY",
@@ -47,40 +49,20 @@ final aiClient = AiClient(
 );
 ```
 
-> ⚠️ Do not hardcode API keys in packages.  
-> Pass the key from your app or environment.
+> ⚠️ Never hardcode API keys in production apps.\
+> Use environment variables or a backend proxy.
 
----
+------------------------------------------------------------------------
 
-### 2️⃣ Simple Prompt Completion
+# 🧠 Using PromptTemplate
 
-```dart
-final response = await aiClient.complete(
-  prompt: "Explain Flutter packages in simple words",
-);
-
-if (response.hasError) {
-  print(response.error);
-} else {
-  print(response.text);
-}
-```
-
----
-
-## 🧠 PromptTemplate (Key Feature)
-
-`PromptTemplate` allows you to create **reusable prompts** using variables instead of string concatenation.
-
-### Example: Summarization Prompt
-
-```dart
+``` dart
 final prompt = PromptTemplate(
-  template: "Summarize the following text in {lang}:\n{text}",
+  template: "Summarize the following text:\n{text}",
   variables: {
-    "lang": "English",
     "text": "Flutter packages help developers share reusable components.",
   },
+  language: AiLanguage.chinese,
 );
 
 final response = await aiClient.run(prompt);
@@ -89,23 +71,36 @@ if (response.hasError) {
   print(response.error);
 } else {
   print(response.text);
+  print("Tokens used: ${response.tokens}");
 }
 ```
 
-### ✔️ Why use PromptTemplate?
+------------------------------------------------------------------------
 
-- Cleaner prompt construction
-- Easy variable replacement
-- Reusable & maintainable prompts
-- Ideal for production AI systems
+# 🌍 Language Control
 
----
+Force response language:
 
-## 📊 AI Response Model
+``` dart
+language: AiLanguage.bengali
+language: AiLanguage.chinese
+language: AiLanguage.arabic
+```
 
-All AI calls return an `AiResponse` object.
+Enable automatic detection:
 
-```dart
+``` dart
+await aiClient.complete(
+  prompt: userInput,
+  autoDetectLanguage: true,
+);
+```
+
+------------------------------------------------------------------------
+
+# 📊 AI Response Model
+
+``` dart
 class AiResponse {
   final String text;
   final int? tokens;
@@ -115,71 +110,54 @@ class AiResponse {
 }
 ```
 
----
+------------------------------------------------------------------------
 
-## ⚠️ Error Handling (No Crashes)
+# ⚠️ Error Handling
 
-Handled cases:
+Handled scenarios:
 
-- Missing API key
-- Invalid API key (401)
-- Network failures
-- Invalid or empty AI responses
+-   Missing API key\
+-   Invalid API key (401)\
+-   Network failures\
+-   Invalid AI response\
+-   Unexpected API errors
 
-Example error message:
+------------------------------------------------------------------------
 
-```
-API key not configured. Please provide a valid API key.
-```
+# 🔐 Security Best Practice
 
----
+Recommended architecture:
 
-## 🧪 Example App
+Flutter App → Your Backend → OpenAI
 
-This package includes a full Flutter example demonstrating:
+Instead of:
 
-- PromptTemplate usage
-- AI request lifecycle
-- Loading state handling
-- Error-safe UI
+Flutter App → OpenAI directly
 
-Run the example:
+------------------------------------------------------------------------
 
-```bash
-cd example
-flutter run
-```
+# 🛣️ Roadmap
 
----
+-   🌊 Streaming responses\
+-   🧾 Structured JSON output mode\
+-   🧠 System + User role messaging\
+-   🔄 Multi-provider support\
+-   📦 Built-in AI presets
 
-## 🔐 API Key Management
-
-For security reasons:
-
-- ❌ Do not commit API keys to GitHub
-- ❌ Do not hardcode API keys in packages
-- ✅ Provide API keys from the application layer
-- `.env` usage is optional (not required)
+------------------------------------------------------------------------
 
 ---
 
-## 🛣️ Roadmap
+## 👨‍💻 Project Maintainer ❤️
 
-- Streaming AI responses
-- Structured JSON output
-- Multiple LLM provider support
-- Built-in prompt presets
+[![Md. Hamid Hosen](https://github.com/hamidhosen42.png?size=140)](https://github.com/hamidhosen42)
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome!  
-Feel free to open issues or submit pull requests.
+**[Md. Hamid Hosen](https://github.com/hamidhosen42)**  
+Associate Software Engineer @P2M Soft
 
 ---
+------------------------------------------------------------------------
 
-## 📄 License
+# 📄 License
 
 MIT License
-#
