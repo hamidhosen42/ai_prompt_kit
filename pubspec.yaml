@@ -1,6 +1,6 @@
 name: ai_prompt_kit
 description: A Flutter-friendly AI helper package for calling LLM APIs using prompt templates and structured responses.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/hamidhosen42/ai_prompt_kit
 
 environment:

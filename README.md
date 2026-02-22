@@ -25,7 +25,7 @@ Add to your `pubspec.yaml`:
 
 ``` yaml
 dependencies:
-  ai_prompt_kit: ^0.1.0
+  ai_prompt_kit: ^0.1.1
 ```
 
 Then run:
