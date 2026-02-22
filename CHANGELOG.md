@@ -1,5 +1,12 @@
-## 0.0.3
+## 0.1.0
 
-- Minor improvements
-- Documentation updates
-- UI example refinements
+### ? Added
+- Enhanced AiLanguage enum with built-in label property
+- Auto language detection improvements
+- Token usage tracking in AiResponse
+- Improved PromptTemplate language handling
+
+### ? Improved
+- UI example redesign
+- Better error handling
+- Documentation refinements

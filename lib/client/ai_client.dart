@@ -1,19 +1,33 @@
 import 'dart:convert';
+import 'package:ai_prompt_kit/config/ai_language.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/ai_config.dart';
 import '../prompt/prompt_template.dart';
 import '../response/ai_response.dart';
+import '../utils/language_detector.dart';
 
 class AiClient {
   final AiConfig config;
 
   AiClient(this.config);
 
-  Future<AiResponse> complete({required String prompt}) {
-    return _send(prompt);
-  }
+  Future<AiResponse> complete({
+    required String prompt,
+    AiLanguage language = AiLanguage.auto,
+    bool autoDetectLanguage = false,
+  }) async {
+    AiLanguage finalLanguage = language;
 
+    if (autoDetectLanguage || language == AiLanguage.auto) {
+      finalLanguage = LanguageDetector.detect(prompt);
+    }
+
+    final modifiedPrompt =
+        "Respond strictly in ${finalLanguage.label}.\n\n$prompt";
+
+    return _send(modifiedPrompt);
+  }
   Future<AiResponse> run(PromptTemplate template) {
     return _send(template.build());
   }

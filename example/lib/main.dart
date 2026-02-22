@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ai_prompt_kit/ai_prompt_kit.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -29,22 +30,31 @@ class PromptTemplateDemo extends StatefulWidget {
 }
 
 class _PromptTemplateDemoState extends State<PromptTemplateDemo> {
-  static const String apiKey = ""; 
-
   final textController = TextEditingController(
     text:
-        "Flutter packages help developers share reusable components and speed up app development.",
+    "Flutter packages help developers share reusable components and speed up app development.",
   );
 
   String result = "AI response will appear here.";
   bool isLoading = false;
   bool isError = false;
+  int? tokens;
 
   Future<void> _runPromptTemplate() async {
+    final apiKey = "";
+
     if (apiKey.isEmpty) {
       setState(() {
         isError = true;
-        result = "API key not configured. Please add your AI API key.";
+        result = "API key not configured. Please check your .env file.";
+      });
+      return;
+    }
+
+    if (textController.text.trim().isEmpty) {
+      setState(() {
+        isError = true;
+        result = "Please enter some text.";
       });
       return;
     }
@@ -52,6 +62,7 @@ class _PromptTemplateDemoState extends State<PromptTemplateDemo> {
     setState(() {
       isLoading = true;
       isError = false;
+      tokens = null;
     });
 
     final client = AiClient(
@@ -61,13 +72,12 @@ class _PromptTemplateDemoState extends State<PromptTemplateDemo> {
       ),
     );
 
-
     final prompt = PromptTemplate(
-      template: "Summarize the following text in {lang}:\n{text}",
+      template: "Summarize the following text:\n{text}",
       variables: {
-        "lang": "English",
         "text": textController.text,
       },
+      language: AiLanguage.chinese,
     );
 
     final response = await client.run(prompt);
@@ -76,6 +86,7 @@ class _PromptTemplateDemoState extends State<PromptTemplateDemo> {
       isLoading = false;
       isError = response.hasError;
       result = response.hasError ? response.error! : response.text;
+      tokens = response.tokens;
     });
   }
 
@@ -86,61 +97,100 @@ class _PromptTemplateDemoState extends State<PromptTemplateDemo> {
         title: const Text("PromptTemplate Demo"),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 10),
 
-            TextField(
-              controller: textController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: "Input Text",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: isLoading ? null : _runPromptTemplate,
-                icon: const Icon(Icons.auto_fix_high),
-                label: const Text("Run PromptTemplate"),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-
-            Expanded(
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+              // ? Input Field
+              TextField(
+                controller: textController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: "Input Text",
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : SingleChildScrollView(
-                          child: Text(
-                            result,
-                            style: TextStyle(
-                              fontSize: 16,
-                              height: 1.5,
-                              color: isError
-                                  ? Colors.redAccent
-                                  : Colors.black87,
-                            ),
-                          ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ? Button
+              SizedBox(
+                height: 50,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 4,
+                  ),
+                  onPressed: isLoading ? null : _runPromptTemplate,
+                  icon: const Icon(Icons.auto_fix_high),
+                  label: Text(
+                    isLoading ? "Processing..." : "Run PromptTemplate",
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // ? Result Card
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 10,
+                      color: Colors.black.withOpacity(0.05),
+                    )
+                  ],
+                ),
+                child: isLoading
+                    ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+                    : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      result,
+                      style: TextStyle(
+                        fontSize: 16,
+                        height: 1.6,
+                        color: isError
+                            ? Colors.redAccent
+                            : Colors.black87,
+                      ),
+                    ),
+                    if (tokens != null) ...[
+                      const SizedBox(height: 15),
+                      Text(
+                        "Tokens used: $tokens",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
                         ),
+                      ),
+                    ]
+                  ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
